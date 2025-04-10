@@ -1,0 +1,335 @@
+openapi: 3.0.0
+info:
+  title: Users REST API
+  description: RESTful API with scalable architecture for user management
+  version: 1.0.0
+  contact:
+    email: admin@example.com
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Development server
+  - url: https://api.example.com/api/v1
+    description: Production server
+
+tags:
+  - name: Users
+    description: User management endpoints
+  - name: Health
+    description: API health check
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      responses:
+        '200':
+          description: API is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: API is running
+                  version:
+                    type: string
+                    example: v1
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      description: Returns a list of all users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      description: Creates a new user with the provided data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Username or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error:
+                  message: Username or email already exists
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+    
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      description: Returns a single user by ID
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    
+    put:
+      tags:
+        - Users
+      summary: Update user
+      description: Updates a user's information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateInput'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Username or email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                error:
+                  message: Username or email already exists
+        '500':
+          $ref: '#/components/responses/InternalError'
+    
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: Deletes a user by ID
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+    UserInput:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          example: securePassword123
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+    
+    UserUpdateInput:
+      type: object
+      properties:
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          example: securePassword123
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+    
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Error message
+            stack:
+              type: string
+              description: Only included in development environment
+              example: Error stack trace
+            details:
+              type: array
+              description: Validation errors details
+              items:
+                type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: Bad request
+    
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: User not found
+    
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error:
+              message: Internal server error 
