@@ -30,6 +30,15 @@ app.use(
   })
 );
 
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    uptime: process.uptime(),
+    timestamp: new Date()
+  });
+});
+
 // API versioning routes
 app.use('/api/v1', apiV1Routes);
 

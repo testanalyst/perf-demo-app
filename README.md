@@ -62,10 +62,36 @@ For production deployment:
 npm start
 ```
 
+## Cloud Deployment
+
+### Railway Deployment (Recommended)
+
+This API is set up for easy deployment to Railway:
+
+1. Sign up for [Railway](https://railway.app/)
+2. Click "New Project" → "Deploy from GitHub repo"
+3. Add a PostgreSQL service
+4. Set up environment variables:
+   - `NODE_ENV=production`
+   - `DATABASE_URL` (Railway will provide this)
+   - `JWT_SECRET=your_secret_key`
+
+For detailed Railway deployment instructions, see [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md)
+
+### Other Cloud Platforms
+
+This API is designed to be deployable to various cloud platforms:
+
+- **Azure App Service**: Host the Node.js application
+- **Azure Database for PostgreSQL**: Managed PostgreSQL database
+- **Azure Key Vault**: Store secrets and configuration
+- **Azure Monitor**: Application insights and monitoring
+
 ## API Documentation
 
 API documentation is available at `/api-docs` when the server is running:
 - Local: http://localhost:3000/api-docs
+- Railway: https://your-app-name.up.railway.app/api-docs
 
 ## Project Structure
 
@@ -84,18 +110,11 @@ API documentation is available at `/api-docs` when the server is running:
 │   └── utils/                  # Utility functions
 ├── .env                        # Environment variables
 ├── .env.example                # Example environment variables
+├── Dockerfile                  # Container definition for deployment
+├── railway.json                # Railway configuration
 ├── package.json                # Project dependencies
 └── README.md                   # Project documentation
 ```
-
-## Cloud Deployment
-
-This API is designed to be deployable to cloud platforms like Azure:
-
-- **Azure App Service**: Host the Node.js application
-- **Azure Database for PostgreSQL**: Managed PostgreSQL database
-- **Azure Key Vault**: Store secrets and configuration
-- **Azure Monitor**: Application insights and monitoring
 
 ## Future Enhancements
 
